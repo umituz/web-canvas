@@ -1,6 +1,6 @@
 {
   "name": "@umituz/web-canvas",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Comprehensive canvas and screenshot generation library with device frames, patterns, and PDF export",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
