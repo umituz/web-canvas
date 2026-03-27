@@ -1,0 +1,97 @@
+{
+  "name": "@umituz/web-canvas",
+  "version": "1.0.5",
+  "description": "Comprehensive canvas and screenshot generation library with device frames, patterns, and PDF export",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./domain": {
+      "types": "./dist/domain/index.d.ts",
+      "import": "./dist/domain/index.mjs",
+      "require": "./dist/domain/index.js"
+    },
+    "./services": {
+      "types": "./dist/application/index.d.ts",
+      "import": "./dist/application/index.mjs",
+      "require": "./dist/application/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/presentation/index.d.ts",
+      "import": "./dist/presentation/index.mjs",
+      "require": "./dist/presentation/index.js"
+    },
+    "./renderers": {
+      "types": "./dist/infrastructure/index.d.ts",
+      "import": "./dist/infrastructure/index.mjs",
+      "require": "./dist/infrastructure/index.js"
+    },
+    "./config": {
+      "types": "./dist/domain/config/index.d.ts",
+      "import": "./dist/domain/config/index.mjs",
+      "require": "./dist/domain/config/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/domain/index.ts src/application/index.ts src/presentation/index.ts src/infrastructure/index.ts src/domain/config/index.ts --format cjs,esm --dts --clean --external react",
+    "dev": "tsup src/index.ts src/domain/index.ts src/application/index.ts src/presentation/index.ts src/infrastructure/index.ts src/domain/config/index.ts --format cjs,esm --dts --watch --external react",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "canvas",
+    "screenshot",
+    "app-store",
+    "google-play",
+    "device-frame",
+    "pdf-export",
+    "html2canvas",
+    "jspdf",
+    "screenshot-generator",
+    "mobile-frame",
+    "ios-screenshot",
+    "android-screenshot",
+    "typescript",
+    "react",
+    "screenshot-studio"
+  ],
+  "author": "umituz",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/umituz/web-canvas"
+  },
+  "bugs": {
+    "url": "https://github.com/umituz/web-canvas/issues"
+  },
+  "homepage": "https://github.com/umituz/web-canvas#readme",
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/react": "^18.2.0",
+    "eslint": "^9.32.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.38.0"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.1",
+    "xlsx": "^0.18.5"
+  }
+}
