@@ -64,6 +64,7 @@ export function useFreehandCanvas(
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const strokesRef = useRef<FreehandStroke[]>([]);
   const activeStrokeRef = useRef<FreehandStroke | null>(null);
+  const activePointerIdRef = useRef<number | null>(null);
   const dprRef = useRef(1);
 
   const [strokeCount, setStrokeCount] = useState(0);
@@ -168,8 +169,12 @@ export function useFreehandCanvas(
 
     function onPointerDown(event: PointerEvent): void {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
+      // Only one stroke at a time: a resting palm or second finger touching
+      // mid-stroke must not hijack or corrupt the active stroke.
+      if (activeStrokeRef.current != null) return;
       event.preventDefault();
       el.setPointerCapture(event.pointerId);
+      activePointerIdRef.current = event.pointerId;
       const { brushSize: size, color: ink, pressureEnabled: dynamic } = optionsRef.current;
       const stroke: FreehandStroke = {
         size,
@@ -183,7 +188,7 @@ export function useFreehandCanvas(
 
     function onPointerMove(event: PointerEvent): void {
       const stroke = activeStrokeRef.current;
-      if (!stroke) return;
+      if (!stroke || event.pointerId !== activePointerIdRef.current) return;
       event.preventDefault();
       const point = pointFrom(event);
       const previous = stroke.points[stroke.points.length - 1];
@@ -193,8 +198,9 @@ export function useFreehandCanvas(
 
     function commit(event: PointerEvent): void {
       const stroke = activeStrokeRef.current;
-      if (!stroke) return;
+      if (!stroke || event.pointerId !== activePointerIdRef.current) return;
       activeStrokeRef.current = null;
+      activePointerIdRef.current = null;
       if (el.hasPointerCapture(event.pointerId)) {
         el.releasePointerCapture(event.pointerId);
       }
