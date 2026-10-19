@@ -44,6 +44,11 @@ export type {
   ExcelExportOptions,
   CSVExportOptions,
   ReportExportResult,
+
+  // Freehand types
+  FreehandPoint,
+  FreehandStroke,
+  UseFreehandCanvasOptions,
 } from './domain/types';
 
 export type {
@@ -100,3 +105,8 @@ export {
   useReportExport,
   type UseReportExportReturn,
 } from './presentation/hooks/useReportExport';
+
+export {
+  useFreehandCanvas,
+  type UseFreehandCanvasReturn,
+} from './presentation/hooks/useFreehandCanvas';

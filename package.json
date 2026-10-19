@@ -1,6 +1,6 @@
 {
   "name": "@umituz/web-canvas",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Comprehensive canvas and screenshot generation library with device frames, patterns, and PDF export",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -65,7 +65,13 @@
     "android-screenshot",
     "typescript",
     "react",
-    "screenshot-studio"
+    "screenshot-studio",
+    "freehand",
+    "drawing",
+    "handwriting",
+    "signature",
+    "stylus",
+    "apple-pencil"
   ],
   "author": "umituz",
   "license": "MIT",
