@@ -5,6 +5,20 @@
 
 import type { ReportData } from '../../domain/types/report.types';
 import type { PDFExportOptions, ExcelExportOptions } from '../../domain/types/report.types';
+import { writeXlsxBlob } from '../../infrastructure/services/minimalXlsx';
+import type { XlsxSheet } from '../../infrastructure/services/minimalXlsx';
+
+/** Flat records → header + value rows, matching json_to_sheet's shape. */
+function recordsToSheet(
+  name: string,
+  records: Record<string, string | number | boolean | null | undefined>[]
+): XlsxSheet {
+  const headers = [...new Set(records.flatMap((record) => Object.keys(record)))];
+  return {
+    name,
+    rows: [headers, ...records.map((record) => headers.map((header) => record[header]))],
+  };
+}
 
 export class ReportService {
   private static instance: ReportService;
@@ -71,8 +85,7 @@ export class ReportService {
     data: ReportData,
     options: ExcelExportOptions = {}
   ): Promise<void> {
-    const XLSX = await import('xlsx');
-    const wb = XLSX.utils.book_new();
+    const JSZip = (await import('jszip')).default;
 
     // Group items by type
     const apps = data.items
@@ -85,26 +98,15 @@ export class ReportService {
       .filter((i) => i.type === 'post')
       .map((i) => ({ Name: i.name, ...i.metrics, ...i.details }));
 
+    const sheets: XlsxSheet[] = [];
     if (apps.length > 0) {
-      XLSX.utils.book_append_sheet(
-        wb,
-        XLSX.utils.json_to_sheet(apps),
-        options.sheetName || 'Apps'
-      );
+      sheets.push(recordsToSheet(options.sheetName || 'Apps', apps));
     }
     if (campaigns.length > 0) {
-      XLSX.utils.book_append_sheet(
-        wb,
-        XLSX.utils.json_to_sheet(campaigns),
-        'Campaigns'
-      );
+      sheets.push(recordsToSheet('Campaigns', campaigns));
     }
     if (posts.length > 0) {
-      XLSX.utils.book_append_sheet(
-        wb,
-        XLSX.utils.json_to_sheet(posts),
-        'Posts'
-      );
+      sheets.push(recordsToSheet('Posts', posts));
     }
 
     // Summary sheet
@@ -124,14 +126,20 @@ export class ReportService {
           Value: new Date().toLocaleDateString(),
         },
       ];
-      XLSX.utils.book_append_sheet(
-        wb,
-        XLSX.utils.json_to_sheet(summary),
-        'Summary'
-      );
+      sheets.push(recordsToSheet('Summary', summary));
     }
 
-    XLSX.writeFile(wb, options.filename || 'report.xlsx');
+    if (sheets.length === 0) {
+      sheets.push({ name: options.sheetName || 'Sheet1', rows: [] });
+    }
+
+    const blob = await writeXlsxBlob(sheets, JSZip);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = options.filename || 'report.xlsx';
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   /**

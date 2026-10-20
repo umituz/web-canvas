@@ -97,7 +97,6 @@
   "dependencies": {
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
-    "jszip": "^3.10.1",
-    "xlsx": "^0.18.5"
+    "jszip": "^3.10.1"
   }
 }
