@@ -1,8 +1,3 @@
-/**
- * useFreehandCanvas Hook
- * React hook for pointer-based freehand drawing on a canvas
- */
-
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   FreehandPoint,
@@ -12,64 +7,53 @@ import type {
 
 const DEFAULT_BRUSH_SIZE = 3;
 const DEFAULT_COLOR = '#1a1a1a';
+const DEFAULT_KEYBOARD_STEP = 4;
+const KEYBOARD_FAST_FACTOR = 4;
 
-/**
- * Width for a point: constant for mouse/touch, pressure-scaled for pens
- */
 function widthFor(stroke: FreehandStroke, point: FreehandPoint): number {
   if (!stroke.dynamic) return stroke.size;
-  // pressure is 0 (some mice) – 1 (hard press); clamp the visual range
   return stroke.size * (0.5 + Math.min(1, Math.max(0, point.pressure)));
 }
 
-/**
- * Return value of the useFreehandCanvas hook
- */
 export interface UseFreehandCanvasReturn {
-  /** Ref to attach to the <canvas> element that captures drawing. */
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  /** Remove the most recent stroke. */
   undo: () => void;
-  /** Remove all strokes. */
   clear: () => void;
-  /** Number of committed strokes. */
   strokeCount: number;
-  /** True when no strokes are committed. */
   isEmpty: boolean;
-  /** Snapshot of committed strokes (safe to serialize). */
   getStrokes: () => FreehandStroke[];
 }
 
-/**
- * useFreehandCanvas hook
- *
- * Attaches pointer-event drawing to a canvas element. The canvas is sized to
- * its CSS box at device-pixel resolution (and re-rendered on resize), strokes
- * are replayed from captured points so undo/clear are lossless, and stylus
- * pressure modulates line width when the pointer reports it.
- *
- * The canvas gets `touch-action: none` applied so drawing works on touch
- * screens without scrolling the page. Consumers typically layer the canvas
- * over their own guide content (e.g. a faint glyph to trace).
- */
+interface KeyboardPen {
+  x: number;
+  y: number;
+  down: boolean;
+  engaged: boolean;
+}
+
 export function useFreehandCanvas(
   options: UseFreehandCanvasOptions = {}
 ): UseFreehandCanvasReturn {
-  const { brushSize = DEFAULT_BRUSH_SIZE, color = DEFAULT_COLOR, pressureEnabled = true } = options;
+  const {
+    brushSize = DEFAULT_BRUSH_SIZE,
+    color = DEFAULT_COLOR,
+    pressureEnabled = true,
+    keyboard = false,
+    keyboardStep = DEFAULT_KEYBOARD_STEP,
+  } = options;
 
-  // Latest option values for event handlers, without re-binding listeners.
-  const optionsRef = useRef({ brushSize, color, pressureEnabled, onStrokeEnd: options.onStrokeEnd });
-  optionsRef.current = { brushSize, color, pressureEnabled, onStrokeEnd: options.onStrokeEnd };
+  const optionsRef = useRef({ brushSize, color, pressureEnabled, keyboardStep, onStrokeEnd: options.onStrokeEnd });
+  optionsRef.current = { brushSize, color, pressureEnabled, keyboardStep, onStrokeEnd: options.onStrokeEnd };
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const strokesRef = useRef<FreehandStroke[]>([]);
   const activeStrokeRef = useRef<FreehandStroke | null>(null);
   const activePointerIdRef = useRef<number | null>(null);
   const dprRef = useRef(1);
+  const penRef = useRef<KeyboardPen | null>(null);
 
   const [strokeCount, setStrokeCount] = useState(0);
 
-  /** Replay every committed stroke (and the active one) at current DPR. */
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
@@ -103,9 +87,20 @@ export function useFreehandCanvas(
         ctx.stroke();
       }
     }
+    const pen = penRef.current;
+    if (pen?.engaged && !pen.down) {
+      const reach = 5;
+      ctx.strokeStyle = 'rgba(35, 37, 43, 0.55)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pen.x - reach, pen.y);
+      ctx.lineTo(pen.x + reach, pen.y);
+      ctx.moveTo(pen.x, pen.y - reach);
+      ctx.lineTo(pen.x, pen.y + reach);
+      ctx.stroke();
+    }
   }, []);
 
-  /** Match the backing store to the CSS box; returns true when it changed. */
   const syncDimensions = useCallback((): boolean => {
     const canvas = canvasRef.current;
     if (!canvas) return false;
@@ -125,8 +120,9 @@ export function useFreehandCanvas(
 
     const el: HTMLCanvasElement = canvas;
 
-    // Touch screens must draw, not scroll, while the pointer is down.
     el.style.touchAction = 'none';
+    if (keyboard && !el.hasAttribute('tabindex')) el.tabIndex = 0;
+    if (!penRef.current) penRef.current = { x: el.clientWidth / 2, y: el.clientHeight / 2, down: false, engaged: false };
 
     syncDimensions();
     redraw();
@@ -169,8 +165,6 @@ export function useFreehandCanvas(
 
     function onPointerDown(event: PointerEvent): void {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
-      // Only one stroke at a time: a resting palm or second finger touching
-      // mid-stroke must not hijack or corrupt the active stroke.
       if (activeStrokeRef.current != null) return;
       event.preventDefault();
       el.setPointerCapture(event.pointerId);
@@ -183,6 +177,7 @@ export function useFreehandCanvas(
         points: [pointFrom(event)],
       };
       activeStrokeRef.current = stroke;
+      penRef.current = { x: stroke.points[0].x, y: stroke.points[0].y, down: false, engaged: false };
       drawDot(stroke, stroke.points[0]);
     }
 
@@ -209,10 +204,76 @@ export function useFreehandCanvas(
       optionsRef.current.onStrokeEnd?.(stroke);
     }
 
+    function clampPen(pen: KeyboardPen): void {
+      pen.x = Math.min(Math.max(pen.x, 0), Math.max(0, el.clientWidth - 1));
+      pen.y = Math.min(Math.max(pen.y, 0), Math.max(0, el.clientHeight - 1));
+    }
+
+    function startKeyboardStroke(pen: KeyboardPen): void {
+      const { brushSize: size, color: ink } = optionsRef.current;
+      const stroke: FreehandStroke = {
+        size,
+        color: ink,
+        dynamic: false,
+        points: [{ x: pen.x, y: pen.y, pressure: 0.5 }],
+      };
+      activeStrokeRef.current = stroke;
+      pen.down = true;
+      drawDot(stroke, stroke.points[0]);
+    }
+
+    function commitKeyboardStroke(pen: KeyboardPen): void {
+      const stroke = activeStrokeRef.current;
+      if (!stroke) return;
+      activeStrokeRef.current = null;
+      pen.down = false;
+      strokesRef.current = [...strokesRef.current, stroke];
+      setStrokeCount(strokesRef.current.length);
+      optionsRef.current.onStrokeEnd?.(stroke);
+      redraw();
+    }
+
+    function onKeyDown(event: KeyboardEvent): void {
+      const pen = penRef.current;
+      if (!pen) return;
+      const fast = event.shiftKey ? KEYBOARD_FAST_FACTOR : 1;
+      const step = optionsRef.current.keyboardStep * fast;
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        pen.engaged = true;
+        pen.x += event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0;
+        pen.y += event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0;
+        clampPen(pen);
+        const stroke = activeStrokeRef.current;
+        if (pen.down && stroke) {
+          const point: FreehandPoint = { x: pen.x, y: pen.y, pressure: 0.5 };
+          const previous = stroke.points[stroke.points.length - 1];
+          stroke.points.push(point);
+          drawSegment(stroke, previous, point);
+        } else {
+          redraw();
+        }
+        return;
+      }
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        pen.engaged = true;
+        if (pen.down) commitKeyboardStroke(pen);
+        else startKeyboardStroke(pen);
+        return;
+      }
+      if (event.key === 'Escape' && pen.down) {
+        activeStrokeRef.current = null;
+        pen.down = false;
+        redraw();
+      }
+    }
+
     el.addEventListener('pointerdown', onPointerDown);
     el.addEventListener('pointermove', onPointerMove);
     el.addEventListener('pointerup', commit);
     el.addEventListener('pointercancel', commit);
+    if (keyboard) el.addEventListener('keydown', onKeyDown);
 
     return () => {
       observer.disconnect();
@@ -220,8 +281,9 @@ export function useFreehandCanvas(
       el.removeEventListener('pointermove', onPointerMove);
       el.removeEventListener('pointerup', commit);
       el.removeEventListener('pointercancel', commit);
+      el.removeEventListener('keydown', onKeyDown);
     };
-  }, [redraw, syncDimensions]);
+  }, [redraw, syncDimensions, keyboard]);
 
   const undo = useCallback(() => {
     if (strokesRef.current.length === 0) return;
