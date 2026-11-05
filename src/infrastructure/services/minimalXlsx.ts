@@ -1,15 +1,6 @@
-/**
- * Minimal XLSX writer — replaces the unmaintained npm `xlsx` (SheetJS)
- * dependency, whose registry build carries open prototype-pollution and
- * ReDoS advisories with no registry fix. The report export only ever
- * writes flat tables (header row + primitive cells), so a hand-rolled
- * SpreadsheetML package on top of jszip covers the need: inline-string
- * and numeric cells, multiple sheets, Excel/LibreOffice/Sheets-compatible.
- */
 
 export interface XlsxSheet {
   name: string;
-  /** Rows of primitive cells; the first row is the header. */
   rows: (string | number | boolean | null | undefined)[][];
 }
 
@@ -24,7 +15,6 @@ function escapeXml(value: string): string {
     .replace(/'/g, '&apos;');
 }
 
-/** Excel sheet names: max 31 chars, no : \ / ? * [ ]. */
 function safeSheetName(name: string, index: number): string {
   const cleaned = name.replace(/[:\\/?*[\]]/g, ' ').slice(0, 31).trim();
   return cleaned.length > 0 ? cleaned : `Sheet${index + 1}`;
@@ -66,7 +56,6 @@ function sheetXml(rows: XlsxSheet['rows']): string {
   return `${XML_HEADER}<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${body}</sheetData></worksheet>`;
 }
 
-/** Assembles the sheets into a .xlsx zip blob using jszip. */
 export async function writeXlsxBlob(sheets: XlsxSheet[], JSZip: typeof import('jszip')): Promise<Blob> {
   const zip = new JSZip();
   const safeNames = sheets.map((sheet, index) => safeSheetName(sheet.name, index));

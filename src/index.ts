@@ -1,11 +1,5 @@
-/**
- * @umituz/web-canvas
- * Comprehensive canvas and screenshot generation library
- */
 
-// Domain exports
 export type {
-  // Canvas types
   CanvasFormat,
   CanvasQuality,
   CanvasDimensions,
@@ -17,7 +11,6 @@ export type {
   CanvasResult,
   CanvasOperation,
 
-  // Screenshot types
   DeviceType,
   FrameStyle,
   LayoutStyle,
@@ -34,7 +27,6 @@ export type {
   AppStoreMetadata,
   ScreenshotProject,
 
-  // Report types
   ReportItemType,
   ReportItem,
   ReportSummary,
@@ -45,7 +37,6 @@ export type {
   CSVExportOptions,
   ReportExportResult,
 
-  // Freehand types
   FreehandPoint,
   FreehandStroke,
   UseFreehandCanvasOptions,
@@ -72,7 +63,6 @@ export {
   DEFAULT_SCREENSHOT_STUDIO_CONFIG,
 } from './domain/config/ScreenshotStudioConfig';
 
-// Infrastructure exports
 export { CanvasRenderer } from './infrastructure/renderers/CanvasRenderer';
 export { PatternRenderer } from './infrastructure/renderers/PatternRenderer';
 export {
@@ -82,13 +72,11 @@ export {
   DeviceConfigService,
 } from './infrastructure/services/DeviceConfigService';
 
-// Application exports
 export {
   ScreenshotStudioService,
 } from './application/services/ScreenshotStudioService';
 export { ReportService } from './application/services/ReportService';
 
-// Presentation exports
 export {
   useScreenshotStudio,
   type UseScreenshotStudioOptions,

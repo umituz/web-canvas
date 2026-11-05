@@ -1,47 +1,22 @@
-/**
- * Canvas Types
- * Core canvas operation types
- */
 
-/**
- * Canvas format options
- */
 export type CanvasFormat = 'png' | 'jpeg' | 'webp';
 
-/**
- * Canvas render quality
- */
-export type CanvasQuality = number; // 0.0 to 1.0
+export type CanvasQuality = number;
 
-/**
- * Canvas dimensions
- */
 export interface CanvasDimensions {
   width: number;
   height: number;
 }
 
-/**
- * Canvas position
- */
 export interface CanvasPosition {
   x: number;
   y: number;
 }
 
-/**
- * Canvas rectangle
- */
 export interface CanvasRect extends CanvasPosition, CanvasDimensions {}
 
-/**
- * Canvas color
- */
 export type CanvasColor = string;
 
-/**
- * Canvas context configuration
- */
 export interface CanvasContextConfig {
   fillStyle?: CanvasColor;
   strokeStyle?: CanvasColor;
@@ -54,9 +29,6 @@ export interface CanvasContextConfig {
   textBaseline?: CanvasTextBaseline;
 }
 
-/**
- * Canvas export options
- */
 export interface CanvasExportOptions {
   format?: CanvasFormat;
   quality?: CanvasQuality;
@@ -65,9 +37,6 @@ export interface CanvasExportOptions {
   useCORS?: boolean;
 }
 
-/**
- * Canvas result
- */
 export interface CanvasResult {
   blob: Blob;
   url: string;
@@ -76,9 +45,6 @@ export interface CanvasResult {
   size: number;
 }
 
-/**
- * Canvas operation callback
- */
 export type CanvasOperation<T> = (
   ctx: CanvasRenderingContext2D,
   dimensions: CanvasDimensions

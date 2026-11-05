@@ -1,14 +1,7 @@
-/**
- * Device Configuration Service
- * Manages device configurations and dimensions
- */
 
 import { DeviceType, DeviceConfig } from '../../domain/types/screenshot.types';
 import { DEVICE_DIMENSIONS } from '../../domain/config/DeviceConfig';
 
-/**
- * Device configuration service
- */
 export class DeviceConfigService {
   private static instance: DeviceConfigService;
   private devices: Map<DeviceType, DeviceConfig>;
@@ -119,7 +112,6 @@ export class DeviceConfigService {
   }
 
   public getAllDevices(): DeviceConfig[] {
-    // Use cached value if available
     if (!this.allDevicesCache) {
       this.allDevicesCache = Array.from(this.devices.values());
     }
@@ -127,7 +119,6 @@ export class DeviceConfigService {
   }
 
   public getPhones(): DeviceConfig[] {
-    // Use cached value if available
     if (!this.phonesCache) {
       this.phonesCache = this.getAllDevices().filter((d) => d.isPhone);
     }
@@ -135,7 +126,6 @@ export class DeviceConfigService {
   }
 
   public getTablets(): DeviceConfig[] {
-    // Use cached value if available
     if (!this.tabletsCache) {
       this.tabletsCache = this.getAllDevices().filter((d) => d.isTablet);
     }

@@ -1,29 +1,14 @@
-/**
- * Device Configuration
- * Device frame configuration
- */
 
 import type { DeviceType } from '../types/screenshot.types';
 
-/**
- * Device configuration
- */
 export interface DeviceConfigOption {
-  /** Available device types */
   devices: DeviceType[];
-  /** Default device type */
   defaultDevice?: DeviceType;
-  /** Show device frame */
   showFrame?: boolean;
-  /** Frame color */
   frameColor?: string;
-  /** Frame thickness in pixels */
   frameThickness?: number;
 }
 
-/**
- * Device dimensions presets
- */
 export const DEVICE_DIMENSIONS: Record<DeviceType, { width: number; height: number }> = {
   'iphone-15-pro': { width: 1290, height: 2796 },
   'iphone-15': { width: 1179, height: 2556 },
@@ -35,9 +20,6 @@ export const DEVICE_DIMENSIONS: Record<DeviceType, { width: number; height: numb
   'desktop': { width: 1920, height: 1080 },
 };
 
-/**
- * Default device configuration
- */
 export const DEFAULT_DEVICE_CONFIG: DeviceConfigOption = {
   devices: Object.keys(DEVICE_DIMENSIONS) as DeviceType[],
   defaultDevice: 'iphone-15-pro',

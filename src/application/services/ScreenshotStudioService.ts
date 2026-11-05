@@ -1,7 +1,3 @@
-/**
- * Screenshot Studio Service
- * High-level screenshot generation service
- */
 
 import type {
   ScreenshotContent,
@@ -28,9 +24,6 @@ export class ScreenshotStudioService {
     this.renderer = new ScreenshotRenderer();
   }
 
-  /**
-   * Generate screenshot
-   */
   public async generateScreenshot(
     options: ScreenshotGenerationOptions
   ): Promise<ScreenshotMetadata> {
@@ -73,14 +66,10 @@ export class ScreenshotStudioService {
     };
   }
 
-  /**
-   * Generate batch screenshots
-   */
   public async generateBatchScreenshots(
     deviceTypes: DeviceType[]
   ): Promise<ScreenshotMetadata[]> {
-    // Process in parallel with concurrency control for better performance
-    const BATCH_SIZE = 3; // Process 3 screenshots at a time to avoid memory issues
+    const BATCH_SIZE = 3;
 
     const results: ScreenshotMetadata[] = [];
 
@@ -96,9 +85,6 @@ export class ScreenshotStudioService {
     return results;
   }
 
-  /**
-   * Generate designed screenshot
-   */
   public async generateDesignedScreenshot(
     content: ScreenshotContent,
     design: ScreenshotDesign
@@ -119,9 +105,6 @@ export class ScreenshotStudioService {
     };
   }
 
-  /**
-   * Export project as ZIP
-   */
   public async exportProjectAsZip(
     project: ScreenshotProject
   ): Promise<Blob> {
@@ -133,7 +116,6 @@ export class ScreenshotStudioService {
       throw new Error('Failed to create folder in ZIP');
     }
 
-    // Add metadata if enabled
     if (this.config.export?.includeMetadata) {
       const metadataText = `APP NAME: ${project.appMetadata.appName}
 SUBTITLE: ${project.appMetadata.subtitle}
@@ -147,7 +129,6 @@ ${project.appMetadata.whatsNew}`;
       folder.file('aso_metadata.txt', metadataText);
     }
 
-    // Generate screenshots in parallel for better performance
     const screenshotPromises = project.screens.map((screen, index) =>
       this.generateDesignedScreenshot(screen, project.design)
         .then(screenshot => ({ screenshot, index }))
@@ -155,7 +136,6 @@ ${project.appMetadata.whatsNew}`;
 
     const screenshots = await Promise.all(screenshotPromises);
 
-    // Add all screenshots to ZIP
     screenshots.forEach(({ screenshot, index }) => {
       const base64Data = screenshot.url.split(',')[1];
       folder.file(
@@ -168,9 +148,6 @@ ${project.appMetadata.whatsNew}`;
     return await zip.generateAsync({ type: 'blob' });
   }
 
-  /**
-   * Create project
-   */
   public createProject(name: string): ScreenshotProject {
     return {
       id: this.generateId(),
@@ -193,9 +170,6 @@ ${project.appMetadata.whatsNew}`;
     };
   }
 
-  /**
-   * Get default design
-   */
   private getDefaultDesign(): ScreenshotDesign {
     return {
       backgroundColor: '#6366f1',
@@ -232,9 +206,6 @@ ${project.appMetadata.whatsNew}`;
     };
   }
 
-  /**
-   * Get default screen
-   */
   private getDefaultScreen(): ScreenshotContent {
     return {
       id: '1',
@@ -251,16 +222,11 @@ ${project.appMetadata.whatsNew}`;
     };
   }
 
-  /**
-   * Generate unique ID - optimized version
-   */
   private generateId(): string {
-    // Use more efficient ID generation with crypto if available
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return crypto.randomUUID();
     }
 
-    // Fallback to timestamp + random for better uniqueness
     return `${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 9)}`;
   }
 }

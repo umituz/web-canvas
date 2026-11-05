@@ -1,14 +1,9 @@
-/**
- * Report Service
- * PDF export and report generation service
- */
 
 import type { ReportData } from '../../domain/types/report.types';
 import type { PDFExportOptions, ExcelExportOptions } from '../../domain/types/report.types';
 import { writeXlsxBlob } from '../../infrastructure/services/minimalXlsx';
 import type { XlsxSheet } from '../../infrastructure/services/minimalXlsx';
 
-/** Flat records → header + value rows, matching json_to_sheet's shape. */
 function recordsToSheet(
   name: string,
   records: Record<string, string | number | boolean | null | undefined>[]
@@ -30,9 +25,6 @@ export class ReportService {
     return ReportService.instance;
   }
 
-  /**
-   * Export DOM element to PDF
-   */
   async exportToPDF(
     elementId: string,
     options: PDFExportOptions = {}
@@ -60,9 +52,6 @@ export class ReportService {
     pdf.save(options.filename || 'report.pdf');
   }
 
-  /**
-   * Export canvas to PDF
-   */
   async exportCanvasToPDF(
     canvas: HTMLCanvasElement,
     options: PDFExportOptions = {}
@@ -78,16 +67,12 @@ export class ReportService {
     pdf.save(options.filename || 'canvas-export.pdf');
   }
 
-  /**
-   * Export data to Excel
-   */
   async exportToExcel(
     data: ReportData,
     options: ExcelExportOptions = {}
   ): Promise<void> {
     const JSZip = (await import('jszip')).default;
 
-    // Group items by type
     const apps = data.items
       .filter((i) => i.type === 'app')
       .map((i) => ({ Name: i.name, ...i.metrics, ...i.details }));
@@ -109,7 +94,6 @@ export class ReportService {
       sheets.push(recordsToSheet('Posts', posts));
     }
 
-    // Summary sheet
     if (options.includeSummary !== false) {
       const summary = [
         { Metric: 'Total Reach', Value: data.summary.totalReach },
@@ -142,9 +126,6 @@ export class ReportService {
     URL.revokeObjectURL(url);
   }
 
-  /**
-   * Export data to CSV
-   */
   exportToCSV(
     data: ReportData,
     filename: string = 'report.csv',
@@ -170,9 +151,6 @@ export class ReportService {
     URL.revokeObjectURL(url);
   }
 
-  /**
-   * Export multiple elements to PDF
-   */
   async exportMultipleToPDF(
     elementIds: string[],
     options: PDFExportOptions = {}

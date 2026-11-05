@@ -1,59 +1,30 @@
-/**
- * Screenshot Studio Configuration
- * Complete screenshot studio configuration
- */
 
 import type { CanvasConfig } from './CanvasConfig';
 import type { DeviceConfigOption } from './DeviceConfig';
 import type { ScreenshotFormat, Language } from '../types/screenshot.types';
 
-/**
- * Export configuration
- */
 export interface ExportConfig {
-  /** Include ASO metadata in export */
   includeMetadata?: boolean;
-  /** ZIP filename template */
   zipFilename?: string;
-  /** Folder structure */
   folderStructure?: 'flat' | 'by-language' | 'by-device';
-  /** Default export format */
   defaultFormat?: ScreenshotFormat;
 }
 
-/**
- * AI configuration
- */
 export interface AIConfig {
-  /** Enable AI features */
   enabled?: boolean;
-  /** AI provider */
   provider?: 'gemini' | 'openai' | 'anthropic';
-  /** API key (if needed) */
   apiKey?: string;
 }
 
-/**
- * Screenshot studio configuration
- */
 export interface ScreenshotStudioConfig {
-  /** Canvas configuration */
   canvas?: CanvasConfig;
-  /** Device configuration */
   device?: DeviceConfigOption;
-  /** Export configuration */
   export?: ExportConfig;
-  /** AI configuration */
   ai?: AIConfig;
-  /** Supported languages */
   languages?: Language[];
-  /** Default language */
   defaultLanguage?: Language;
 }
 
-/**
- * Default screenshot studio configuration
- */
 export const DEFAULT_SCREENSHOT_STUDIO_CONFIG: ScreenshotStudioConfig = {
   canvas: {
     defaultFormat: 'png' as any,

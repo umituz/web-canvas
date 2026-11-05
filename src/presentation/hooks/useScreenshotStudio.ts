@@ -1,7 +1,3 @@
-/**
- * useScreenshotStudio Hook
- * React hook for screenshot studio functionality
- */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type {
@@ -20,19 +16,12 @@ import type { ScreenshotStudioConfig } from '../../domain/config/ScreenshotStudi
 import { DEFAULT_SCREENSHOT_STUDIO_CONFIG } from '../../domain/config/ScreenshotStudioConfig';
 import { ScreenshotStudioService } from '../../application/services/ScreenshotStudioService';
 
-/**
- * useScreenshotStudio hook options
- */
 export interface UseScreenshotStudioOptions {
   config?: Partial<ScreenshotStudioConfig>;
   onShowToast?: (title: string, description?: string) => void;
 }
 
-/**
- * useScreenshotStudio hook return
- */
 export interface UseScreenshotStudioReturn {
-  // State
   screens: ScreenshotContent[];
   design: ScreenshotDesign;
   currentLanguage: Language;
@@ -44,33 +33,26 @@ export interface UseScreenshotStudioReturn {
   appIcon: string | null;
   projectId: string | null;
 
-  // Design management
   updateDesign: (updates: Partial<ScreenshotDesign>) => void;
   updateActiveScreen: (updates: Partial<ScreenshotContent>) => void;
   setSelectedScreenId: (screenId: string) => void;
 
-  // Language management
   changeLanguage: (newLanguage: Language) => void;
 
-  // Screen management
   addScreen: () => void;
   removeScreen: (screenId: string) => void;
   duplicateScreen: (screenId: string) => void;
 
-  // Template management
   applyTemplate: (template: ScreenshotTemplate) => void;
 
-  // Generation
   generateDesignedScreenshot: (
     screenId: string
   ) => Promise<{ url: string; id: string } | undefined>;
 
-  // Export
   exportAllScreensAsZip: (
     format?: ScreenshotFormat
   ) => Promise<void>;
 
-  // AI features (if available)
   handleAIMagic?: (screenId: string) => Promise<void>;
   handleTranslate?: (
     screenId: string,
@@ -78,7 +60,6 @@ export interface UseScreenshotStudioReturn {
   ) => Promise<void>;
   handleGenerateMetadata?: () => Promise<void>;
 
-  // Project management
   setAppMetadata: (metadata: AppStoreMetadata) => void;
   setAppIcon: (icon: string | null) => void;
   setProjectId: (id: string | null) => void;
@@ -86,9 +67,6 @@ export interface UseScreenshotStudioReturn {
   _loadProjectState: (state: Partial<ScreenshotProject>) => void;
 }
 
-/**
- * Default screens
- */
 const DEFAULT_SCREENS: ScreenshotContent[] = [
   {
     id: '1',
@@ -132,9 +110,6 @@ const DEFAULT_SCREENS: ScreenshotContent[] = [
   },
 ];
 
-/**
- * Default design
- */
 const DEFAULT_DESIGN: ScreenshotDesign = {
   backgroundColor: '#6366f1',
   backgroundGradientEnd: '#a855f7',
@@ -169,9 +144,6 @@ const DEFAULT_DESIGN: ScreenshotDesign = {
   isPanoramic: false,
 };
 
-/**
- * Default app metadata
- */
 const DEFAULT_APP_METADATA: AppStoreMetadata = {
   appName: 'Growdo',
   subtitle: 'AI Content Generator',
@@ -182,9 +154,6 @@ const DEFAULT_APP_METADATA: AppStoreMetadata = {
   whatsNew: 'New Design Studio integration!',
 };
 
-/**
- * useScreenshotStudio hook
- */
 export function useScreenshotStudio(
   options: UseScreenshotStudioOptions = {}
 ): UseScreenshotStudioReturn {
@@ -200,20 +169,9 @@ export function useScreenshotStudio(
 
   const serviceRef = useRef<ScreenshotStudioService | null>(null);
 
-  // Initialize service once
   if (!serviceRef.current) {
     serviceRef.current = new ScreenshotStudioService(fullConfig);
   }
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      // Clean up service resources if needed
-      if (serviceRef.current) {
-        // Any cleanup logic can go here
-      }
-    };
-  }, []);
 
   const [screens, setScreens] = useState<ScreenshotContent[]>(DEFAULT_SCREENS);
   const [design, setDesign] = useState<ScreenshotDesign>(DEFAULT_DESIGN);
@@ -414,13 +372,11 @@ export function useScreenshotStudio(
       } finally {
         setIsProcessing(false);
 
-        // Clean up object URL after a delay
         if (url) {
           setTimeout(() => {
             try {
               URL.revokeObjectURL(url!);
-            } catch (e) {
-              // Ignore cleanup errors
+            } catch {
             }
           }, 100);
         }

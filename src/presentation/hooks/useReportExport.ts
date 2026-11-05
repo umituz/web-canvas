@@ -1,7 +1,3 @@
-/**
- * useReportExport Hook
- * React hook for report export operations
- */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ReportData } from '../../domain/types/report.types';
@@ -11,9 +7,6 @@ import type {
 } from '../../domain/types/report.types';
 import { ReportService } from '../../application/services/ReportService';
 
-/**
- * useReportExport hook return
- */
 export interface UseReportExportReturn {
   isExporting: boolean;
   error: string | null;
@@ -40,17 +33,12 @@ export interface UseReportExportReturn {
   ) => void;
 }
 
-/**
- * useReportExport hook
- */
 export function useReportExport(): UseReportExportReturn {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Use ref to prevent recreating service instance on every render
   const reportServiceRef = useRef<ReportService | null>(null);
 
-  // Initialize service once
   if (!reportServiceRef.current) {
     reportServiceRef.current = ReportService.getInstance();
   }

@@ -1,7 +1,3 @@
-/**
- * Domain Types Index
- * Export all domain types
- */
 
 export * from './canvas.types';
 export * from './screenshot.types';

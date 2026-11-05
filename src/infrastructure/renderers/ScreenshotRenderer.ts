@@ -1,7 +1,3 @@
-/**
- * Screenshot Renderer
- * Device frame and screenshot rendering operations
- */
 
 import type {
   CanvasDimensions,
@@ -31,18 +27,12 @@ export class ScreenshotRenderer {
     this.deviceConfigService = DeviceConfigService.getInstance();
   }
 
-  /**
-   * Clear render cache to free memory
-   */
   public clearCache(): void {
     this.renderCache.clear();
     this.canvasRenderer.clearImageCache?.();
     this.patternRenderer.clearCache?.();
   }
 
-  /**
-   * Render device frame
-   */
   public renderDeviceFrame(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
@@ -72,9 +62,6 @@ export class ScreenshotRenderer {
     }
   }
 
-  /**
-   * Render realistic device frame
-   */
   private renderRealisticFrame(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
@@ -91,9 +78,6 @@ export class ScreenshotRenderer {
     );
   }
 
-  /**
-   * Render minimal device frame
-   */
   private renderMinimalFrame(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
@@ -105,9 +89,6 @@ export class ScreenshotRenderer {
     ctx.strokeRect(0, 0, dimensions.width, dimensions.height);
   }
 
-  /**
-   * Render device notch
-   */
   private renderNotch(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions
@@ -118,15 +99,11 @@ export class ScreenshotRenderer {
     ctx.fill();
   }
 
-  /**
-   * Render background - optimized
-   */
   public renderBackground(
     ctx: CanvasRenderingContext2D,
     design: ScreenshotDesign,
     dimensions: CanvasDimensions
   ): void {
-    // Fill background
     if (design.backgroundGradientEnd) {
       const gradient = this.canvasRenderer.createLinearGradient(
         ctx,
@@ -146,7 +123,6 @@ export class ScreenshotRenderer {
 
     ctx.fillRect(0, 0, dimensions.width, dimensions.height);
 
-    // Render pattern if specified (and not none)
     if (design.backgroundPattern && design.backgroundPattern !== 'none') {
       this.patternRenderer.renderPattern(
         ctx,
@@ -156,9 +132,6 @@ export class ScreenshotRenderer {
     }
   }
 
-  /**
-   * Render text content
-   */
   public renderTextContent(
     ctx: CanvasRenderingContext2D,
     content: ScreenshotContent,
@@ -200,9 +173,6 @@ export class ScreenshotRenderer {
     );
   }
 
-  /**
-   * Format text case
-   */
   private formatText(
     text: string,
     textCase: 'uppercase' | 'lowercase' | 'none' = 'none'
@@ -217,9 +187,6 @@ export class ScreenshotRenderer {
     }
   }
 
-  /**
-   * Render screenshot image
-   */
   public async renderScreenshotImage(
     ctx: CanvasRenderingContext2D,
     imageUrl: string,
@@ -233,7 +200,6 @@ export class ScreenshotRenderer {
     );
     if (!deviceConfig) return;
 
-    // Calculate screenshot area (inside device frame)
     const frameThickness = deviceConfig.frameThickness || 8;
     const padding = 60 + frameThickness;
     const screenshotWidth = dimensions.width - padding * 2;
@@ -253,9 +219,6 @@ export class ScreenshotRenderer {
     }
   }
 
-  /**
-   * Render complete screenshot
-   */
   public async renderDesignedScreenshot(
     content: ScreenshotContent,
     design: ScreenshotDesign
@@ -274,18 +237,14 @@ export class ScreenshotRenderer {
       throw new Error('Failed to get canvas context');
     }
 
-    // Render background
     this.renderBackground(ctx, design, dimensions);
 
-    // Render screenshot image if available
     if (content.screenshot) {
       await this.renderScreenshotImage(ctx, content.screenshot, design, dimensions);
     }
 
-    // Render text content
     this.renderTextContent(ctx, content, design, dimensions);
 
-    // Render device frame
     this.renderDeviceFrame(
       ctx,
       dimensions,
@@ -297,18 +256,13 @@ export class ScreenshotRenderer {
     return canvas;
   }
 
-  /**
-   * Render placeholder content
-   */
   public renderPlaceholderContent(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
     deviceType: DeviceType
   ): void {
-    // Background
     this.canvasRenderer.fillRect(ctx, 0, 0, dimensions.width, dimensions.height, '#ffffff');
 
-    // Header area
     this.canvasRenderer.fillRect(ctx, 0, 0, dimensions.width, 60, '#f3f4f6');
     this.canvasRenderer.fillRect(
       ctx,
@@ -319,7 +273,6 @@ export class ScreenshotRenderer {
       '#f3f4f6'
     );
 
-    // Placeholder content blocks
     ctx.fillStyle = '#e5e7eb';
     for (let i = 0; i < 5; i++) {
       const y = 80 + i * 120;
@@ -329,7 +282,6 @@ export class ScreenshotRenderer {
       }
     }
 
-    // Device frame
     const deviceConfig = this.deviceConfigService.getDeviceConfig(deviceType);
     if (deviceConfig) {
       this.renderDeviceFrame(

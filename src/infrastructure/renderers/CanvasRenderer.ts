@@ -1,7 +1,3 @@
-/**
- * Canvas Renderer
- * Core canvas rendering operations
- */
 
 import type {
   CanvasDimensions,
@@ -20,9 +16,6 @@ export class CanvasRenderer {
     this.imageCache = new Map();
   }
 
-  /**
-   * Create a new canvas element
-   */
   public createCanvas(dimensions: CanvasDimensions): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
     canvas.width = dimensions.width;
@@ -30,18 +23,12 @@ export class CanvasRenderer {
     return canvas;
   }
 
-  /**
-   * Get canvas 2D context
-   */
   public getContext(
     canvas: HTMLCanvasElement
   ): CanvasRenderingContext2D | null {
     return canvas.getContext('2d');
   }
 
-  /**
-   * Apply context configuration
-   */
   public configureContext(
     ctx: CanvasRenderingContext2D,
     config: CanvasContextConfig
@@ -75,9 +62,6 @@ export class CanvasRenderer {
     }
   }
 
-  /**
-   * Clear canvas
-   */
   public clearCanvas(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions
@@ -85,9 +69,6 @@ export class CanvasRenderer {
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
   }
 
-  /**
-   * Fill rectangle
-   */
   public fillRect(
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -102,9 +83,6 @@ export class CanvasRenderer {
     ctx.fillRect(x, y, width, height);
   }
 
-  /**
-   * Stroke rectangle
-   */
   public strokeRect(
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -123,9 +101,6 @@ export class CanvasRenderer {
     ctx.strokeRect(x, y, width, height);
   }
 
-  /**
-   * Draw text
-   */
   public drawText(
     ctx: CanvasRenderingContext2D,
     text: string,
@@ -139,9 +114,6 @@ export class CanvasRenderer {
     ctx.fillText(text, x, y);
   }
 
-  /**
-   * Draw image
-   */
   public async drawImage(
     ctx: CanvasRenderingContext2D,
     imageSource: string | HTMLImageElement,
@@ -165,11 +137,7 @@ export class CanvasRenderer {
     }
   }
 
-  /**
-   * Load image from URL with caching
-   */
   private loadImage(url: string): Promise<HTMLImageElement> {
-    // Check cache first
     if (this.imageCache.has(url)) {
       return Promise.resolve(this.imageCache.get(url)!);
     }
@@ -180,7 +148,6 @@ export class CanvasRenderer {
         img.crossOrigin = 'anonymous';
       }
       img.onload = () => {
-        // Cache the loaded image
         this.imageCache.set(url, img);
         resolve(img);
       };
@@ -189,23 +156,14 @@ export class CanvasRenderer {
     });
   }
 
-  /**
-   * Clear image cache to free memory
-   */
   public clearImageCache(): void {
     this.imageCache.clear();
   }
 
-  /**
-   * Get cache size for monitoring
-   */
   public getCacheSize(): number {
     return this.imageCache.size;
   }
 
-  /**
-   * Create gradient
-   */
   public createLinearGradient(
     ctx: CanvasRenderingContext2D,
     x1: number,
@@ -221,9 +179,6 @@ export class CanvasRenderer {
     return gradient;
   }
 
-  /**
-   * Export canvas to blob
-   */
   public async exportToBlob(
     canvas: HTMLCanvasElement,
     options: CanvasExportOptions = {}
@@ -232,7 +187,6 @@ export class CanvasRenderer {
     const quality = options.quality || this.config.defaultQuality;
     const scale = options.scale || this.config.scale;
 
-    // Scale canvas if needed
     const scaledCanvas = (scale || 1) !== 1 ? this.scaleCanvas(canvas, scale || 1) : canvas;
 
     const mimeType = `image/${format || 'png'}`;
@@ -262,9 +216,6 @@ export class CanvasRenderer {
     };
   }
 
-  /**
-   * Export canvas to data URL
-   */
   public exportToDataURL(
     canvas: HTMLCanvasElement,
     format?: string,
@@ -275,9 +226,6 @@ export class CanvasRenderer {
     return canvas.toDataURL(mimeType, q);
   }
 
-  /**
-   * Scale canvas
-   */
   private scaleCanvas(
     canvas: HTMLCanvasElement,
     scale: number
@@ -296,9 +244,6 @@ export class CanvasRenderer {
     return scaled;
   }
 
-  /**
-   * Clone canvas
-   */
   public cloneCanvas(canvas: HTMLCanvasElement): HTMLCanvasElement {
     const clone = document.createElement('canvas');
     clone.width = canvas.width;

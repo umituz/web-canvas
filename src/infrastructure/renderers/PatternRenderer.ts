@@ -1,7 +1,3 @@
-/**
- * Pattern Renderer
- * Background pattern rendering operations
- */
 
 import type { CanvasDimensions } from '../../domain/types/canvas.types';
 import type { BackgroundPattern } from '../../domain/types/screenshot.types';
@@ -10,9 +6,6 @@ export class PatternRenderer {
   private patternCanvasCache: Map<string, HTMLCanvasElement> = new Map();
   private readonly MAX_CACHE_SIZE = 10;
 
-  /**
-   * Render pattern on canvas
-   */
   public renderPattern(
     ctx: CanvasRenderingContext2D,
     pattern: BackgroundPattern,
@@ -45,16 +38,10 @@ export class PatternRenderer {
     ctx.restore();
   }
 
-  /**
-   * Clear pattern cache to free memory
-   */
   public clearCache(): void {
     this.patternCanvasCache.clear();
   }
 
-  /**
-   * Render dot pattern - optimized with batch rendering
-   */
   private renderDotPattern(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
@@ -64,7 +51,6 @@ export class PatternRenderer {
     const spacing = 30;
     const radius = 2;
 
-    // Batch rendering for better performance
     ctx.beginPath();
     for (let x = spacing; x < dimensions.width; x += spacing) {
       for (let y = spacing; y < dimensions.height; y += spacing) {
@@ -75,9 +61,6 @@ export class PatternRenderer {
     ctx.fill();
   }
 
-  /**
-   * Render grid pattern - optimized with single path
-   */
   private renderGridPattern(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
@@ -89,13 +72,11 @@ export class PatternRenderer {
 
     ctx.beginPath();
 
-    // Vertical lines
     for (let x = 0; x <= dimensions.width; x += spacing) {
       ctx.moveTo(x, 0);
       ctx.lineTo(x, dimensions.height);
     }
 
-    // Horizontal lines
     for (let y = 0; y <= dimensions.height; y += spacing) {
       ctx.moveTo(0, y);
       ctx.lineTo(dimensions.width, y);
@@ -104,9 +85,6 @@ export class PatternRenderer {
     ctx.stroke();
   }
 
-  /**
-   * Render line pattern - optimized with single path
-   */
   private renderLinePattern(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
@@ -118,7 +96,6 @@ export class PatternRenderer {
 
     ctx.beginPath();
 
-    // Draw all lines in a single path
     for (let y = spacing; y < dimensions.height; y += spacing) {
       ctx.moveTo(0, y);
       ctx.lineTo(dimensions.width, y);
@@ -127,9 +104,6 @@ export class PatternRenderer {
     ctx.stroke();
   }
 
-  /**
-   * Render wave pattern - optimized with pre-calculated values
-   */
   private renderWavePattern(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,
@@ -145,7 +119,6 @@ export class PatternRenderer {
     for (let y = spacing; y < dimensions.height; y += spacing) {
       ctx.beginPath();
 
-      // Pre-calculate wave points and use more efficient path drawing
       const startX = 0;
       const startY = y + Math.sin(startX * frequency) * amplitude;
       ctx.moveTo(startX, startY);
@@ -159,9 +132,6 @@ export class PatternRenderer {
     }
   }
 
-  /**
-   * Render checker pattern
-   */
   private renderCheckerPattern(
     ctx: CanvasRenderingContext2D,
     dimensions: CanvasDimensions,

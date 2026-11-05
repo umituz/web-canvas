@@ -1,11 +1,4 @@
-/**
- * Screenshot Types
- * Screenshot generation and device frame types
- */
 
-/**
- * Device type
- */
 export type DeviceType =
   | 'iphone-15-pro'
   | 'iphone-15'
@@ -16,9 +9,6 @@ export type DeviceType =
   | 'android-tablet'
   | 'desktop';
 
-/**
- * Device type enum (for backward compatibility)
- */
 export const DeviceTypeEnum = {
   IPHONE_15_PRO: 'iphone-15-pro',
   IPHONE_15: 'iphone-15',
@@ -30,37 +20,22 @@ export const DeviceTypeEnum = {
   DESKTOP: 'desktop',
 } as const;
 
-/**
- * Frame style options
- */
 export type FrameStyle = 'realistic' | 'minimal' | 'none';
 
-/**
- * Frame style enum (for backward compatibility)
- */
 export const FrameStyleEnum = {
   REALISTIC: 'realistic',
   MINIMAL: 'minimal',
   NONE: 'none',
 } as const;
 
-/**
- * Layout style options
- */
 export type LayoutStyle = 'text-top' | 'text-bottom' | 'text-overlay';
 
-/**
- * Layout style enum (for backward compatibility)
- */
 export const LayoutStyleEnum = {
   TEXT_TOP: 'text-top',
   TEXT_BOTTOM: 'text-bottom',
   TEXT_OVERLAY: 'text-overlay',
 } as const;
 
-/**
- * Background pattern options
- */
 export type BackgroundPattern =
   | 'none'
   | 'dots'
@@ -69,9 +44,6 @@ export type BackgroundPattern =
   | 'waves'
   | 'checkers';
 
-/**
- * Background pattern enum (for backward compatibility)
- */
 export const BackgroundPatternEnum = {
   NONE: 'none',
   DOTS: 'dots',
@@ -81,37 +53,22 @@ export const BackgroundPatternEnum = {
   CHECKERS: 'checkers',
 } as const;
 
-/**
- * Screenshot format
- */
 export type ScreenshotFormat = 'png' | 'jpeg' | 'webp';
 
-/**
- * Screenshot format enum (for backward compatibility)
- */
 export const ScreenshotFormatEnum = {
   PNG: 'png',
   JPEG: 'jpeg',
   WEBP: 'webp',
 } as const;
 
-/**
- * Language code
- */
 export type Language = string;
 
-/**
- * Device dimensions
- */
 export interface DeviceDimensions {
   width: number;
   height: number;
   scale?: number;
 }
 
-/**
- * Device configuration
- */
 export interface DeviceConfig {
   type: DeviceType;
   name: string;
@@ -123,9 +80,6 @@ export interface DeviceConfig {
   frameThickness?: number;
 }
 
-/**
- * Screenshot content
- */
 export interface ScreenshotContent {
   id: string;
   title: string;
@@ -138,9 +92,6 @@ export interface ScreenshotContent {
   imageAnchorY?: number;
 }
 
-/**
- * Screenshot design
- */
 export interface ScreenshotDesign {
   backgroundColor: string;
   backgroundGradientEnd?: string | null;
@@ -175,9 +126,6 @@ export interface ScreenshotDesign {
   isPanoramic?: boolean;
 }
 
-/**
- * Screenshot metadata
- */
 export interface ScreenshotMetadata {
   id: string;
   deviceType: DeviceType;
@@ -188,9 +136,6 @@ export interface ScreenshotMetadata {
   url: string;
 }
 
-/**
- * Screenshot generation options
- */
 export interface ScreenshotGenerationOptions {
   deviceType: DeviceType;
   format?: ScreenshotFormat;
@@ -198,9 +143,6 @@ export interface ScreenshotGenerationOptions {
   customDimensions?: DeviceDimensions;
 }
 
-/**
- * Screenshot template
- */
 export interface ScreenshotTemplate {
   id: string;
   name: string;
@@ -209,9 +151,6 @@ export interface ScreenshotTemplate {
   thumbnail?: string;
 }
 
-/**
- * App Store metadata
- */
 export interface AppStoreMetadata {
   appName: string;
   subtitle: string;
@@ -221,9 +160,6 @@ export interface AppStoreMetadata {
   whatsNew: string;
 }
 
-/**
- * Screenshot project
- */
 export interface ScreenshotProject {
   id: string;
   name: string;

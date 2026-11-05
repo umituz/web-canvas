@@ -1,7 +1,3 @@
-/**
- * useCanvasExport Hook
- * React hook for canvas export operations
- */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { CanvasExportOptions, CanvasResult } from '../../domain/types/canvas.types';
@@ -9,16 +5,10 @@ import type { CanvasConfig } from '../../domain/config/CanvasConfig';
 import { DEFAULT_CANVAS_CONFIG } from '../../domain/config/CanvasConfig';
 import { CanvasRenderer } from '../../infrastructure/renderers/CanvasRenderer';
 
-/**
- * useCanvasExport hook options
- */
 export interface UseCanvasExportOptions {
   config?: CanvasConfig;
 }
 
-/**
- * useCanvasExport hook return
- */
 export interface UseCanvasExportReturn {
   isExporting: boolean;
   progress: number;
@@ -40,9 +30,6 @@ export interface UseCanvasExportReturn {
   cloneCanvas: (canvas: HTMLCanvasElement) => HTMLCanvasElement | null;
 }
 
-/**
- * useCanvasExport hook
- */
 export function useCanvasExport(
   options: UseCanvasExportOptions = {}
 ): UseCanvasExportReturn {
@@ -52,26 +39,22 @@ export function useCanvasExport(
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  // Use ref to prevent recreating renderer on every render
   const rendererRef = useRef<CanvasRenderer | null>(null);
   const urlCleanupRef = useRef<string[]>([]);
 
-  // Initialize renderer once
   if (!rendererRef.current) {
     rendererRef.current = new CanvasRenderer(config);
   }
 
-  // Cleanup URLs on unmount
   useEffect(() => {
     return () => {
-      // Clean up any remaining URLs
       urlCleanupRef.current.forEach(url => {
         try {
           URL.revokeObjectURL(url);
-        } catch (e) {
-          // Ignore errors during cleanup
+        } catch {
         }
       });
+
       urlCleanupRef.current = [];
     };
   }, []);
@@ -91,7 +74,6 @@ export function useCanvasExport(
         const result = await rendererRef.current.exportToBlob(canvas, options);
         setProgress(100);
 
-        // Track URL for cleanup
         if (result?.url) {
           urlCleanupRef.current.push(result.url);
         }
@@ -154,10 +136,8 @@ export function useCanvasExport(
 
         setProgress(100);
 
-        // Schedule URL cleanup after a delay
         setTimeout(() => {
           URL.revokeObjectURL(result.url);
-          // Remove from cleanup tracking
           const index = urlCleanupRef.current.indexOf(result.url);
           if (index > -1) {
             urlCleanupRef.current.splice(index, 1);
