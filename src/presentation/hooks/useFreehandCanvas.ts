@@ -72,6 +72,7 @@ export function useFreehandCanvas(
       ctx.fillStyle = stroke.color;
       if (stroke.points.length === 1) {
         const point = stroke.points[0];
+        if (!point) continue;
         ctx.beginPath();
         ctx.arc(point.x, point.y, widthFor(stroke, point) / 2, 0, Math.PI * 2);
         ctx.fill();
@@ -80,6 +81,7 @@ export function useFreehandCanvas(
       for (let i = 1; i < stroke.points.length; i += 1) {
         const from = stroke.points[i - 1];
         const to = stroke.points[i];
+        if (!from || !to) continue;
         ctx.beginPath();
         ctx.lineWidth = (widthFor(stroke, from) + widthFor(stroke, to)) / 2;
         ctx.moveTo(from.x, from.y);
@@ -170,15 +172,16 @@ export function useFreehandCanvas(
       el.setPointerCapture(event.pointerId);
       activePointerIdRef.current = event.pointerId;
       const { brushSize: size, color: ink, pressureEnabled: dynamic } = optionsRef.current;
+      const point = pointFrom(event);
       const stroke: FreehandStroke = {
         size,
         color: ink,
         dynamic: dynamic && event.pointerType === 'pen',
-        points: [pointFrom(event)],
+        points: [point],
       };
       activeStrokeRef.current = stroke;
-      penRef.current = { x: stroke.points[0].x, y: stroke.points[0].y, down: false, engaged: false };
-      drawDot(stroke, stroke.points[0]);
+      penRef.current = { x: point.x, y: point.y, down: false, engaged: false };
+      drawDot(stroke, point);
     }
 
     function onPointerMove(event: PointerEvent): void {
@@ -187,6 +190,7 @@ export function useFreehandCanvas(
       event.preventDefault();
       const point = pointFrom(event);
       const previous = stroke.points[stroke.points.length - 1];
+      if (!previous) return;
       stroke.points.push(point);
       drawSegment(stroke, previous, point);
     }
@@ -211,15 +215,16 @@ export function useFreehandCanvas(
 
     function startKeyboardStroke(pen: KeyboardPen): void {
       const { brushSize: size, color: ink } = optionsRef.current;
+      const point: FreehandPoint = { x: pen.x, y: pen.y, pressure: 0.5 };
       const stroke: FreehandStroke = {
         size,
         color: ink,
         dynamic: false,
-        points: [{ x: pen.x, y: pen.y, pressure: 0.5 }],
+        points: [point],
       };
       activeStrokeRef.current = stroke;
       pen.down = true;
-      drawDot(stroke, stroke.points[0]);
+      drawDot(stroke, point);
     }
 
     function commitKeyboardStroke(pen: KeyboardPen): void {
@@ -248,6 +253,7 @@ export function useFreehandCanvas(
         if (pen.down && stroke) {
           const point: FreehandPoint = { x: pen.x, y: pen.y, pressure: 0.5 };
           const previous = stroke.points[stroke.points.length - 1];
+          if (!previous) return;
           stroke.points.push(point);
           drawSegment(stroke, previous, point);
         } else {

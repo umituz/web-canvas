@@ -161,7 +161,7 @@ export class ReportService {
     const pdf = new jsPDF('p', 'mm', 'a4');
 
     for (let i = 0; i < elementIds.length; i++) {
-      const element = document.getElementById(elementIds[i]);
+      const element = document.getElementById(elementIds[i] ?? '');
       if (!element) continue;
 
       const canvas = await html2canvas(element, {

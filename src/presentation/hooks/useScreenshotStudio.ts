@@ -188,7 +188,8 @@ export function useScreenshotStudio(
   const [projectId, setProjectId] = useState<string | null>(null);
 
   const activeScreen =
-    screens.find((s) => s.id === selectedScreenId) || screens[0];
+    screens.find((s) => s.id === selectedScreenId) ||
+    (screens[0] as ScreenshotContent);
 
   const updateDesign = useCallback((updates: Partial<ScreenshotDesign>) => {
     setDesign((prev) => ({ ...prev, ...updates }));
@@ -267,8 +268,9 @@ export function useScreenshotStudio(
 
       setScreens((prev) => {
         const newScreens = prev.filter((s) => s.id !== screenId);
-        if (selectedScreenId === screenId) {
-          setSelectedScreenId(newScreens[0].id);
+        const next = newScreens[0];
+        if (selectedScreenId === screenId && next) {
+          setSelectedScreenId(next.id);
         }
         return newScreens;
       });
