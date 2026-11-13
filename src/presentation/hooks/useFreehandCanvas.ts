@@ -22,6 +22,12 @@ export interface UseFreehandCanvasReturn {
   strokeCount: number;
   isEmpty: boolean;
   getStrokes: () => FreehandStroke[];
+  /** Appends externally-produced strokes (e.g. synced from a peer). */
+  applyStrokes: (strokes: FreehandStroke[]) => void;
+  /** Replaces the whole stroke list (resync / epoch change / clear-all). */
+  replaceStrokes: (strokes: FreehandStroke[]) => void;
+  /** Drops the newest stroke without touching history (remote undo). */
+  removeLastStroke: () => void;
 }
 
 interface KeyboardPen {
@@ -307,6 +313,42 @@ export function useFreehandCanvas(
 
   const getStrokes = useCallback(() => strokesRef.current.map((stroke) => ({ ...stroke, points: stroke.points.map((point) => ({ ...point })) })), []);
 
+  const cloneStroke = (stroke: FreehandStroke): FreehandStroke => ({
+    ...stroke,
+    points: stroke.points.map((point) => ({ ...point })),
+  });
+
+  const isDrawable = (stroke: FreehandStroke): stroke is FreehandStroke =>
+    typeof stroke.color === 'string' && Array.isArray(stroke.points) && stroke.points.length > 0;
+
+  const applyStrokes = useCallback(
+    (incoming: FreehandStroke[]) => {
+      const usable = incoming.filter(isDrawable).map(cloneStroke);
+      if (usable.length === 0) return;
+      strokesRef.current = [...strokesRef.current, ...usable];
+      setStrokeCount(strokesRef.current.length);
+      redraw();
+    },
+    [redraw],
+  );
+
+  const replaceStrokes = useCallback(
+    (incoming: FreehandStroke[]) => {
+      const usable = incoming.filter(isDrawable).map(cloneStroke);
+      strokesRef.current = usable;
+      setStrokeCount(usable.length);
+      redraw();
+    },
+    [redraw],
+  );
+
+  const removeLastStroke = useCallback(() => {
+    if (strokesRef.current.length === 0) return;
+    strokesRef.current = strokesRef.current.slice(0, -1);
+    setStrokeCount(strokesRef.current.length);
+    redraw();
+  }, [redraw]);
+
   return {
     canvasRef,
     undo,
@@ -314,5 +356,8 @@ export function useFreehandCanvas(
     strokeCount,
     isEmpty: strokeCount === 0,
     getStrokes,
+    applyStrokes,
+    replaceStrokes,
+    removeLastStroke,
   };
 }
