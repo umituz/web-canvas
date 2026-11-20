@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type {
   ScreenshotContent,
   ScreenshotDesign,
@@ -266,18 +266,16 @@ export function useScreenshotStudio(
     (screenId: string) => {
       if (screens.length <= 1) return;
 
-      setScreens((prev) => {
-        const newScreens = prev.filter((s) => s.id !== screenId);
-        const next = newScreens[0];
-        if (selectedScreenId === screenId && next) {
-          setSelectedScreenId(next.id);
-        }
-        return newScreens;
-      });
+      const newScreens = screens.filter((s) => s.id !== screenId);
+      const next = newScreens[0];
+      setScreens(newScreens);
+      if (selectedScreenId === screenId && next) {
+        setSelectedScreenId(next.id);
+      }
 
       onShowToast('Info', 'Screen removed');
     },
-    [screens.length, selectedScreenId, onShowToast]
+    [screens, selectedScreenId, onShowToast]
   );
 
   const duplicateScreen = useCallback(

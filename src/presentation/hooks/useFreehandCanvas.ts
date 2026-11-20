@@ -49,7 +49,9 @@ export function useFreehandCanvas(
   } = options;
 
   const optionsRef = useRef({ brushSize, color, pressureEnabled, keyboardStep, onStrokeEnd: options.onStrokeEnd });
-  optionsRef.current = { brushSize, color, pressureEnabled, keyboardStep, onStrokeEnd: options.onStrokeEnd };
+  useEffect(() => {
+    optionsRef.current = { brushSize, color, pressureEnabled, keyboardStep, onStrokeEnd: options.onStrokeEnd };
+  });
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const strokesRef = useRef<FreehandStroke[]>([]);

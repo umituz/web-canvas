@@ -39,9 +39,9 @@ export function useReportExport(): UseReportExportReturn {
 
   const reportServiceRef = useRef<ReportService | null>(null);
 
-  if (!reportServiceRef.current) {
+  useEffect(() => {
     reportServiceRef.current = ReportService.getInstance();
-  }
+  }, []);
 
   const exportToPDF = useCallback(
     async (elementId: string, options?: PDFExportOptions): Promise<void> => {
