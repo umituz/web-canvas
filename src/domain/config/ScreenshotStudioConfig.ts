@@ -27,14 +27,14 @@ export interface ScreenshotStudioConfig {
 
 export const DEFAULT_SCREENSHOT_STUDIO_CONFIG: ScreenshotStudioConfig = {
   canvas: {
-    defaultFormat: 'png' as any,
+    defaultFormat: 'png',
     defaultQuality: 0.9,
     scale: 2,
     useCORS: true,
   },
   device: {
-    devices: ['iphone-15-pro' as any],
-    defaultDevice: 'iphone-15-pro' as any,
+    devices: ['iphone-15-pro'],
+    defaultDevice: 'iphone-15-pro',
     showFrame: true,
     frameColor: '#1f2937',
     frameThickness: 8,
@@ -42,7 +42,7 @@ export const DEFAULT_SCREENSHOT_STUDIO_CONFIG: ScreenshotStudioConfig = {
   export: {
     includeMetadata: true,
     folderStructure: 'by-language',
-    defaultFormat: 'png' as any,
+    defaultFormat: 'png',
   },
   ai: {
     enabled: true,

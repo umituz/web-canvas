@@ -8,7 +8,6 @@ import type {
   ScreenshotContent,
   ScreenshotDesign,
   FrameStyle,
-  LayoutStyle,
 } from '../../domain/types/screenshot.types';
 import { CanvasRenderer } from './CanvasRenderer';
 import { PatternRenderer } from './PatternRenderer';

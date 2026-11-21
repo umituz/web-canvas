@@ -106,7 +106,8 @@ export class ScreenshotStudioService {
   }
 
   public async exportProjectAsZip(
-    project: ScreenshotProject
+    project: ScreenshotProject,
+    format: ScreenshotFormat = 'png'
   ): Promise<Blob> {
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
@@ -139,7 +140,7 @@ ${project.appMetadata.whatsNew}`;
     screenshots.forEach(({ screenshot, index }) => {
       const base64Data = screenshot.url.split(',')[1];
       folder.file(
-        `screen_${index + 1}_${project.design.deviceType}.png`,
+        `screen_${index + 1}_${project.design.deviceType}.${format}`,
         base64Data,
         { base64: true }
       );

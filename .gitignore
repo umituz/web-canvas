@@ -3,6 +3,8 @@ node_modules/
 
 # kilit — npm install yeniden üretir, ASLA gite gitmez
 package-lock.json
+pnpm-lock.yaml
+yarn.lock
 
 # build çıktıları
 dist/

@@ -5,8 +5,6 @@ import type {
   ScreenshotDesign,
   Language,
   DeviceType,
-  LayoutStyle,
-  FrameStyle,
   AppStoreMetadata,
   ScreenshotProject,
   ScreenshotFormat,
@@ -180,7 +178,7 @@ export function useScreenshotStudio(
   );
   const [selectedScreenId, setSelectedScreenId] = useState<string>('1');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isAnalyzing] = useState(false);
   const [appMetadata, setAppMetadata] = useState<AppStoreMetadata>(
     DEFAULT_APP_METADATA
   );
@@ -356,7 +354,7 @@ export function useScreenshotStudio(
           updatedAt: new Date(),
         };
 
-        const blob = await serviceRef.current.exportProjectAsZip(project);
+        const blob = await serviceRef.current.exportProjectAsZip(project, format);
         url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
