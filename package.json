@@ -1,10 +1,10 @@
 {
   "name": "@umituz/web-canvas",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "type": "module",
   "description": "Comprehensive canvas and screenshot generation library with device frames, patterns, and PDF export",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "publishConfig": {
@@ -13,33 +13,33 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./domain": {
       "types": "./dist/domain/index.d.ts",
-      "import": "./dist/domain/index.mjs",
-      "require": "./dist/domain/index.js"
+      "import": "./dist/domain/index.js",
+      "require": "./dist/domain/index.cjs"
     },
     "./services": {
       "types": "./dist/application/index.d.ts",
-      "import": "./dist/application/index.mjs",
-      "require": "./dist/application/index.js"
+      "import": "./dist/application/index.js",
+      "require": "./dist/application/index.cjs"
     },
     "./hooks": {
       "types": "./dist/presentation/index.d.ts",
-      "import": "./dist/presentation/index.mjs",
-      "require": "./dist/presentation/index.js"
+      "import": "./dist/presentation/index.js",
+      "require": "./dist/presentation/index.cjs"
     },
     "./renderers": {
       "types": "./dist/infrastructure/index.d.ts",
-      "import": "./dist/infrastructure/index.mjs",
-      "require": "./dist/infrastructure/index.js"
+      "import": "./dist/infrastructure/index.js",
+      "require": "./dist/infrastructure/index.cjs"
     },
     "./config": {
       "types": "./dist/domain/config/index.d.ts",
-      "import": "./dist/domain/config/index.mjs",
-      "require": "./dist/domain/config/index.js"
+      "import": "./dist/domain/config/index.js",
+      "require": "./dist/domain/config/index.cjs"
     }
   },
   "files": [
