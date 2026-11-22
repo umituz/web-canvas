@@ -98,3 +98,8 @@ export {
   useFreehandCanvas,
   type UseFreehandCanvasReturn,
 } from './presentation/hooks/useFreehandCanvas';
+
+export {
+  DrawingCanvas,
+  type DrawingCanvasProps,
+} from './presentation/components/DrawingCanvas';
