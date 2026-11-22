@@ -103,3 +103,8 @@ export {
   DrawingCanvas,
   type DrawingCanvasProps,
 } from './presentation/components/DrawingCanvas';
+
+export {
+  SignaturePad,
+  type SignaturePadProps,
+} from './presentation/components/SignaturePad';
